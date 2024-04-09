@@ -4,6 +4,8 @@ import pymunk
 import math
 from ..menu.settings import load_settings
 import asyncio
+from .walls import add_walls
+
 
 
 settings = load_settings()
@@ -17,21 +19,22 @@ font_size = settings.get("font_size", 16)
 pixel_size = settings.get("pixel_size", 10)
 
 
-def add_walls(space, screen_width, screen_height):
-    walls = [
-        pymunk.Segment(space.static_body, (0, 0), (screen_width, 0),
-                       wall_thickness),
-        pymunk.Segment(space.static_body, (0, 0), (0, screen_height),
-                       wall_thickness),
-        pymunk.Segment(space.static_body, (screen_width, 0),
-                       (screen_width, screen_height), wall_thickness),
-        pymunk.Segment(space.static_body, (0, screen_height),
-                       (screen_width, screen_height), wall_thickness)
-    ]
-    for wall in walls:
-        wall.elasticity = elasticity
-        wall.friction = friction
-    space.add(*walls)
+# def add_walls(space, screen_width, screen_height):
+#     walls = [
+#         pymunk.Segment(space.static_body, (0, 0), (screen_width, 0),
+#                        wall_thickness),
+#         pymunk.Segment(space.static_body, (0, 0), (0, screen_height),
+#                        wall_thickness),
+#         pymunk.Segment(space.static_body, (screen_width, 0),
+#                        (screen_width, screen_height), wall_thickness),
+#         pymunk.Segment(space.static_body, (0, screen_height),
+#                        (screen_width, screen_height), wall_thickness)
+#     ]
+#     for wall in walls:
+#         wall.elasticity = elasticity
+#         wall.friction = friction
+#     space.add(*walls)
+
 
 
 def generate_angles(split_parts):
@@ -108,7 +111,10 @@ def run_game():
     space = pymunk.Space()
     space.gravity = (0, 20)
 
-    add_walls(space, screen_width, screen_height)
+    # add_walls(space, screen_width, screen_height)
+    # Добавляем стены в пространство
+    add_walls(space, screen_width, screen_height, wall_thickness, elasticity,
+              friction)
 
     settings = load_settings()
     initial_pixel_size = settings.get("initial_pixel_size", 16)

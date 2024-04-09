@@ -1,11 +1,19 @@
 {
-    "initial_pixel_size": 20,
+    "initial_pixel_size": 18,
     "pixel_split_parts": 10,
     "wall_thickness": 5,
     "elasticity": 1.0,
     "friction": 0.5,
-    "min_speed_color": [255, 255, 255],
-    "max_speed_color": [173, 232, 244],
+    "min_speed_color": [
+        255,
+        255,
+        255
+    ],
+    "max_speed_color": [
+        173,
+        232,
+        244
+    ],
     "attract_force": 1000,
     "font_size": 16,
     "pixel_size": 10
