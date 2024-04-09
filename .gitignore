@@ -3,6 +3,9 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+#Idea PyCharm
+.idea/
+
 # C extensions
 *.so
 
@@ -121,7 +124,7 @@ celerybeat.pid
 
 # Environments
 .env
-.venv
+../.venv
 env/
 venv/
 ENV/
