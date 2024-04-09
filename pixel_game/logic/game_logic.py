@@ -19,23 +19,6 @@ font_size = settings.get("font_size", 16)
 pixel_size = settings.get("pixel_size", 10)
 
 
-# def add_walls(space, screen_width, screen_height):
-#     walls = [
-#         pymunk.Segment(space.static_body, (0, 0), (screen_width, 0),
-#                        wall_thickness),
-#         pymunk.Segment(space.static_body, (0, 0), (0, screen_height),
-#                        wall_thickness),
-#         pymunk.Segment(space.static_body, (screen_width, 0),
-#                        (screen_width, screen_height), wall_thickness),
-#         pymunk.Segment(space.static_body, (0, screen_height),
-#                        (screen_width, screen_height), wall_thickness)
-#     ]
-#     for wall in walls:
-#         wall.elasticity = elasticity
-#         wall.friction = friction
-#     space.add(*walls)
-
-
 
 def generate_angles(split_parts):
     for i in range(split_parts):
