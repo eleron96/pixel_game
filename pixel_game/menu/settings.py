@@ -16,6 +16,7 @@ settings_file_path = current_dir / '..' / 'data' / 'settings.json'
 # Путь к файлу с настройками как строка
 SETTINGS_FILE = str(settings_file_path.resolve())
 
+
 # Загрузка настроек из файла
 def load_settings():
     try:
@@ -26,10 +27,12 @@ def load_settings():
         settings = {}
     return settings
 
+
 # Сохранение настроек в файл
 def save_settings(settings):
     with open(SETTINGS_FILE, "w") as file:
         json.dump(settings, file, indent=4)
+
 
 # Получение настроек, если они есть, или настроек по умолчанию
 def get_settings():
@@ -38,15 +41,18 @@ def get_settings():
         settings = get_default_settings()
     return settings
 
+
 # Значения настроек по умолчанию
 DEFAULT_SETTINGS = {
     "initial_pixel_size": 16,
     "pixel_split_parts": 4,
 }
 
+
 # Загрузка настроек по умолчанию, если файл не найден
 def get_default_settings():
     return DEFAULT_SETTINGS.copy()
+
 
 # Функция меню настроек
 def settings_menu():
@@ -66,14 +72,21 @@ def settings_menu():
 
         if selected_option == 0:
             # Изменение размера пикселя
-            settings['initial_pixel_size'] = edit_setting(screen, "Размер пикселя", settings['initial_pixel_size'])
+            settings['initial_pixel_size'] = edit_setting(screen,
+                                                          "Размер пикселя",
+                                                          settings[
+                                                              'initial_pixel_size'])
         elif selected_option == 1:
             # Изменение количества частей при разделении пикселя
-            settings['pixel_split_parts'] = edit_setting(screen, "Количество частей", settings['pixel_split_parts'])
+            settings['pixel_split_parts'] = edit_setting(screen,
+                                                         "Количество частей",
+                                                         settings[
+                                                             'pixel_split_parts'])
         elif selected_option == 2:
             # Сохранение настроек
             save_settings(settings)
             return  # Возвращаемся в главное меню
+
 
 def edit_setting(screen, title, default_value):
     font = pygame.font.Font(None, 32)

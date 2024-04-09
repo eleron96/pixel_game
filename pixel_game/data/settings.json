@@ -1,4 +1,4 @@
 {
-    "pixel_split_parts": 10,
-    "initial_pixel_size": 10
+    "initial_pixel_size": 20,
+    "pixel_split_parts": 10
 }

@@ -5,7 +5,6 @@ from pixel_game.logic.game_logic import run_game
 from pixel_game.menu.settings import settings_menu
 
 
-
 def main():
     pygame.init()
 

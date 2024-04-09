@@ -3,11 +3,25 @@ import pygame
 import pymunk
 import math
 from ..menu.settings import load_settings
+import asyncio
 
 # Константы
 WALL_THICKNESS = 5
 ELASTICITY = 1.0
 FRICTION = 0.5
+
+# Определяем RGB значения для крайних цветов
+MIN_SPEED_COLOR = (255, 255, 255)  # Белый
+MAX_SPEED_COLOR = (173, 232, 244)  # Синий
+
+# Определяем силу притяжения
+ATTRACT_FORCE = 1000
+
+# Размер текста
+FONT_SIZE = 16
+
+# Размер пикселя для отображения количества
+PIXEL_SIZE = 10
 
 
 def add_walls(space, screen_width, screen_height):
@@ -47,9 +61,10 @@ class Pixel:
         self.shape.friction = FRICTION
         self.space.add(self.body, self.shape)
 
-    def draw(self, screen):
+    def draw(self, screen, speed):
         x, y = self.body.position
-        pygame.draw.rect(screen, (255, 255, 255), (x, y, self.size, self.size))
+        color = calculate_color(speed)
+        pygame.draw.rect(screen, pygame.Color(color[0], color[1], color[2]), (x, y, self.size, self.size))
 
     def split(self):
         if self.size <= 2:
@@ -69,8 +84,27 @@ class Pixel:
                 Pixel(self.space, new_x, new_y, new_size, new_speed_x,
                       new_speed_y, self.split_parts))
 
-        self.space.remove(self.body, self.shape)
         return new_pixels
+
+    def apply_force(self, pos):
+        direction = pymunk.Vec2d(pos[0], pos[1]) - self.body.position
+        self.body.apply_force_at_local_point(direction.normalized() * ATTRACT_FORCE, (0, 0))
+
+
+def calculate_color(speed):
+    red = min(max(MIN_SPEED_COLOR[0] + (MAX_SPEED_COLOR[0] - MIN_SPEED_COLOR[0]) * (100 - speed) / 90, 0), 255)
+    green = min(max(MIN_SPEED_COLOR[1] + (MAX_SPEED_COLOR[1] - MIN_SPEED_COLOR[1]) * (100 - speed) / 90, 0), 255)
+    blue = min(max(MIN_SPEED_COLOR[2] + (MAX_SPEED_COLOR[2] - MIN_SPEED_COLOR[2]) * (100 - speed) / 90, 0), 255)
+    return int(red), int(green), int(blue)
+
+
+async def check_pixel_position(pixel, screen_width, screen_height):
+    while True:
+        if (pixel.body.position.x < 0 or pixel.body.position.x > screen_width or
+                pixel.body.position.y < 0 or pixel.body.position.y > screen_height):
+            pixel.space.remove(pixel.body, pixel.shape)
+            break
+        await asyncio.sleep(1)  # Проверяем пиксели каждую секунду
 
 
 def run_game():
@@ -91,6 +125,14 @@ def run_game():
         Pixel(space, screen_width // 2, screen_height // 2, initial_pixel_size,
               100, -100, pixel_split_parts)]
 
+    attraction_force = 0
+
+    font = pygame.font.Font(None, FONT_SIZE)
+
+    # Создаем асинхронную задачу для проверки положения пикселей
+    tasks = [check_pixel_position(pixel, screen_width, screen_height) for pixel in pixels]
+    asyncio.ensure_future(asyncio.gather(*tasks))
+
     return_to_menu = False
 
     while not return_to_menu:
@@ -101,9 +143,13 @@ def run_game():
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_ESCAPE:
                     return_to_menu = True
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                attraction_force = 1000
+            elif event.type == pygame.MOUSEBUTTONUP:
+                attraction_force = 0
 
         screen.fill((0, 0, 0))
-        space.step(1 / 60.0)
+        space.step(1 / 120.0)  # Установка FPS до 120
 
         cursor_pos = pygame.mouse.get_pos()
         new_pixels = []
@@ -115,13 +161,26 @@ def run_game():
                 pixels.remove(pixel)
                 new_pixels.extend(pixel.split())
 
+            # Применяем силу притяжения к каждому пикселю
+            if attraction_force > 0:
+                pixel.apply_force(cursor_pos)
+
         pixels.extend(new_pixels)
 
+        # Отображаем количество пикселей на экране
+        pixel_count_text = font.render("pixels: {}".format(len(pixels)), True, (255, 255, 255))
+        screen.blit(pixel_count_text, (10, 10))
+
+        # Отображаем FPS
+        fps_text = font.render("FPS: {:.2f}".format(clock.get_fps()), True, (255, 255, 255))
+        screen.blit(fps_text, (10, 30))
+
         for pixel in pixels:
-            pixel.draw(screen)
+            speed = math.sqrt(pixel.body.velocity.x ** 2 + pixel.body.velocity.y ** 2)
+            pixel.draw(screen, speed)
 
         pygame.display.flip()
-        clock.tick(60)
+        clock.tick(120)  # Установка FPS до 120
 
     return return_to_menu
 
