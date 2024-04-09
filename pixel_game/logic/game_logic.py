@@ -5,39 +5,32 @@ import math
 from ..menu.settings import load_settings
 import asyncio
 
-# Константы
-WALL_THICKNESS = 5
-ELASTICITY = 1.0
-FRICTION = 0.5
 
-# Определяем RGB значения для крайних цветов
-MIN_SPEED_COLOR = (255, 255, 255)  # Белый
-MAX_SPEED_COLOR = (173, 232, 244)  # Синий
-
-# Определяем силу притяжения
-ATTRACT_FORCE = 1000
-
-# Размер текста
-FONT_SIZE = 16
-
-# Размер пикселя для отображения количества
-PIXEL_SIZE = 10
+settings = load_settings()
+wall_thickness = settings.get("wall_thickness", 5)
+elasticity = settings.get("elasticity", 1.0)
+friction = settings.get("friction", 0.5)
+min_speed_color = settings.get("min_speed_color", [255, 255, 255])
+max_speed_color = settings.get("max_speed_color", [173, 232, 244])
+attract_force = settings.get("attract_force", 1000)
+font_size = settings.get("font_size", 16)
+pixel_size = settings.get("pixel_size", 10)
 
 
 def add_walls(space, screen_width, screen_height):
     walls = [
         pymunk.Segment(space.static_body, (0, 0), (screen_width, 0),
-                       WALL_THICKNESS),
+                       wall_thickness),
         pymunk.Segment(space.static_body, (0, 0), (0, screen_height),
-                       WALL_THICKNESS),
+                       wall_thickness),
         pymunk.Segment(space.static_body, (screen_width, 0),
-                       (screen_width, screen_height), WALL_THICKNESS),
+                       (screen_width, screen_height), wall_thickness),
         pymunk.Segment(space.static_body, (0, screen_height),
-                       (screen_width, screen_height), WALL_THICKNESS)
+                       (screen_width, screen_height), wall_thickness)
     ]
     for wall in walls:
-        wall.elasticity = ELASTICITY
-        wall.friction = FRICTION
+        wall.elasticity = elasticity
+        wall.friction = friction
     space.add(*walls)
 
 
@@ -57,8 +50,8 @@ class Pixel:
         self.body.position = x, y
         self.body.velocity = speed_x, speed_y
         self.shape = pymunk.Poly.create_box(self.body, (size, size))
-        self.shape.elasticity = ELASTICITY
-        self.shape.friction = FRICTION
+        self.shape.elasticity = elasticity
+        self.shape.friction = friction
         self.space.add(self.body, self.shape)
 
     def draw(self, screen, speed):
@@ -88,13 +81,13 @@ class Pixel:
 
     def apply_force(self, pos):
         direction = pymunk.Vec2d(pos[0], pos[1]) - self.body.position
-        self.body.apply_force_at_local_point(direction.normalized() * ATTRACT_FORCE, (0, 0))
+        self.body.apply_force_at_local_point(direction.normalized() * attract_force, (0, 0))
 
 
 def calculate_color(speed):
-    red = min(max(MIN_SPEED_COLOR[0] + (MAX_SPEED_COLOR[0] - MIN_SPEED_COLOR[0]) * (100 - speed) / 90, 0), 255)
-    green = min(max(MIN_SPEED_COLOR[1] + (MAX_SPEED_COLOR[1] - MIN_SPEED_COLOR[1]) * (100 - speed) / 90, 0), 255)
-    blue = min(max(MIN_SPEED_COLOR[2] + (MAX_SPEED_COLOR[2] - MIN_SPEED_COLOR[2]) * (100 - speed) / 90, 0), 255)
+    red = min(max(min_speed_color[0] + (max_speed_color[0] - min_speed_color[0]) * (100 - speed) / 90, 0), 255)
+    green = min(max(min_speed_color[1] + (max_speed_color[1] - min_speed_color[1]) * (100 - speed) / 90, 0), 255)
+    blue = min(max(min_speed_color[2] + (max_speed_color[2] - min_speed_color[2]) * (100 - speed) / 90, 0), 255)
     return int(red), int(green), int(blue)
 
 
@@ -127,7 +120,7 @@ def run_game():
 
     attraction_force = 0
 
-    font = pygame.font.Font(None, FONT_SIZE)
+    font = pygame.font.Font(None, font_size)
 
     # Создаем асинхронную задачу для проверки положения пикселей
     tasks = [check_pixel_position(pixel, screen_width, screen_height) for pixel in pixels]
