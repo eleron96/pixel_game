@@ -1,7 +1,8 @@
 import pygame
 
+
 class Menu:
-    def __init__(self, screen, items, screen_width, screen_height):  # Добавляем аргументы screen_width и screen_height
+    def __init__(self, screen, items, screen_width, screen_height):
         self.screen = screen
         self.items = items
         self.selected = 0
@@ -9,8 +10,17 @@ class Menu:
         self.font_path = None
         self.font = pygame.font.Font(self.font_path, self.font_size)
         self.running = True
-        self.screen_width = screen_width  # Сохраняем размеры окна
+        self.screen_width = screen_width
         self.screen_height = screen_height
+
+    def handle_key_press(self, key):
+        if key == pygame.K_UP:
+            self.selected = (self.selected - 1) % len(self.items)
+        elif key == pygame.K_DOWN:
+            self.selected = (self.selected + 1) % len(self.items)
+        elif key == pygame.K_RETURN:
+            return self.selected
+        return None
 
     def run(self):
         while self.running:
@@ -20,12 +30,9 @@ class Menu:
                     pygame.quit()
                     exit()
                 elif event.type == pygame.KEYDOWN:
-                    if event.key == pygame.K_UP:
-                        self.selected = (self.selected - 1) % len(self.items)
-                    elif event.key == pygame.K_DOWN:
-                        self.selected = (self.selected + 1) % len(self.items)
-                    elif event.key == pygame.K_RETURN:
-                        return self.selected
+                    selected_option = self.handle_key_press(event.key)
+                    if selected_option is not None:
+                        return selected_option
 
             self.screen.fill((0, 0, 0))
             self.draw_menu()
@@ -37,7 +44,6 @@ class Menu:
                 label = self.font.render(f"> {item}", True, (255, 255, 255))
             else:
                 label = self.font.render(item, True, (255, 255, 255))
-            x = (self.screen_width - label.get_width()) // 2  # Выравниваем метку по центру по горизонтали
-            y = (self.screen_height - len(self.items) * 30) // 2 + index * 30  # Выравниваем по центру по вертикали
+            x = (self.screen_width - label.get_width()) // 2
+            y = (self.screen_height - len(self.items) * 30) // 2 + index * 30
             self.screen.blit(label, (x, y))
-

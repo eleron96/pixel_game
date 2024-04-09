@@ -2,21 +2,35 @@ import sys
 import pygame
 import pymunk
 import math
-
 from ..menu.settings import load_settings
 
+# Константы
+WALL_THICKNESS = 5
+ELASTICITY = 1.0
+FRICTION = 0.5
+
+
 def add_walls(space, screen_width, screen_height):
-    thickness = 10
     walls = [
-        pymunk.Segment(space.static_body, (0, 0), (screen_width, 0), thickness),
-        pymunk.Segment(space.static_body, (0, 0), (0, screen_height), thickness),
-        pymunk.Segment(space.static_body, (screen_width, 0), (screen_width, screen_height), thickness),
-        pymunk.Segment(space.static_body, (0, screen_height), (screen_width, screen_height), thickness)
+        pymunk.Segment(space.static_body, (0, 0), (screen_width, 0),
+                       WALL_THICKNESS),
+        pymunk.Segment(space.static_body, (0, 0), (0, screen_height),
+                       WALL_THICKNESS),
+        pymunk.Segment(space.static_body, (screen_width, 0),
+                       (screen_width, screen_height), WALL_THICKNESS),
+        pymunk.Segment(space.static_body, (0, screen_height),
+                       (screen_width, screen_height), WALL_THICKNESS)
     ]
     for wall in walls:
-        wall.elasticity = 1.0
-        wall.friction = 0.5
+        wall.elasticity = ELASTICITY
+        wall.friction = FRICTION
     space.add(*walls)
+
+
+def generate_angles(split_parts):
+    for i in range(split_parts):
+        yield 2 * math.pi * i / split_parts
+
 
 class Pixel:
     def __init__(self, space, x, y, size, speed_x, speed_y, split_parts):
@@ -29,8 +43,8 @@ class Pixel:
         self.body.position = x, y
         self.body.velocity = speed_x, speed_y
         self.shape = pymunk.Poly.create_box(self.body, (size, size))
-        self.shape.elasticity = 1.0
-        self.shape.friction = 0.5
+        self.shape.elasticity = ELASTICITY
+        self.shape.friction = FRICTION
         self.space.add(self.body, self.shape)
 
     def draw(self, screen):
@@ -44,17 +58,20 @@ class Pixel:
 
         new_size = max(self.size // 2, 1)
         new_pixels = []
-        base_speed = math.sqrt(self.body.velocity.x**2 + self.body.velocity.y**2) * 1.4
+        base_speed = math.sqrt(
+            self.body.velocity.x ** 2 + self.body.velocity.y ** 2) * 1.4
 
-        for i in range(self.split_parts):
-            angle = 2 * math.pi * i / self.split_parts
+        for angle in generate_angles(self.split_parts):
             new_speed_x = base_speed * math.cos(angle)
             new_speed_y = base_speed * math.sin(angle)
             new_x, new_y = self.body.position
-            new_pixels.append(Pixel(self.space, new_x, new_y, new_size, new_speed_x, new_speed_y, self.split_parts))
+            new_pixels.append(
+                Pixel(self.space, new_x, new_y, new_size, new_speed_x,
+                      new_speed_y, self.split_parts))
 
         self.space.remove(self.body, self.shape)
         return new_pixels
+
 
 def run_game():
     pygame.init()
@@ -68,9 +85,11 @@ def run_game():
 
     settings = load_settings()
     initial_pixel_size = settings.get("initial_pixel_size", 16)
-    pixel_split_parts = settings.get("pixel_split_parts", 4)  # Получаем значение pixel_split_parts из настроек
+    pixel_split_parts = settings.get("pixel_split_parts", 4)
 
-    pixels = [Pixel(space, screen_width // 2, screen_height // 2, initial_pixel_size, 100, -100, pixel_split_parts)]  # Используем полученное значение
+    pixels = [
+        Pixel(space, screen_width // 2, screen_height // 2, initial_pixel_size,
+              100, -100, pixel_split_parts)]
 
     return_to_menu = False
 
@@ -84,13 +103,14 @@ def run_game():
                     return_to_menu = True
 
         screen.fill((0, 0, 0))
-        space.step(1/60.0)
+        space.step(1 / 60.0)
 
         cursor_pos = pygame.mouse.get_pos()
         new_pixels = []
 
         for pixel in pixels[:]:
-            d = math.sqrt((pixel.body.position.x - cursor_pos[0])**2 + (pixel.body.position.y - cursor_pos[1])**2)
+            d = math.sqrt((pixel.body.position.x - cursor_pos[0]) ** 2 + (
+                        pixel.body.position.y - cursor_pos[1]) ** 2)
             if d <= pixel.size:
                 pixels.remove(pixel)
                 new_pixels.extend(pixel.split())
