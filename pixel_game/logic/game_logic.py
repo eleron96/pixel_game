@@ -16,7 +16,6 @@ friction = settings.get("friction", 0.5)
 min_speed_color = settings.get("min_speed_color", [255, 255, 255])
 max_speed_color = settings.get("max_speed_color", [173, 232, 244])
 attract_force = settings.get("attract_force", 1000)
-font_size = settings.get("font_size", 16)
 pixel_size = settings.get("pixel_size", 10)
 
 
@@ -46,6 +45,8 @@ def run_game():
     settings = load_settings()
     initial_pixel_size = settings.get("initial_pixel_size", 16)
     pixel_split_parts = settings.get("pixel_split_parts", 4)
+    font_size = settings.get("font_size", 16)
+
 
     pixels = [
         Pixel(space, screen_width // 2, screen_height // 2, initial_pixel_size,
