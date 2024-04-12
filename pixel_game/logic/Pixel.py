@@ -55,8 +55,6 @@ class Pixel:
 
         return new_pixels
 
-    def apply_force(self, target_pos):
-        # Вычисляем направление силы от пикселя к позиции курсора
-        direction = pymunk.Vec2d(target_pos) - self.body.position
-        direction = direction.normalized() * attraction_force
-        self.body.apply_force_at_local_point(direction, (0, 0))
+    def apply_force(self, pos):
+        direction = pymunk.Vec2d(pos[0], pos[1]) - self.body.position
+        self.body.apply_force_at_local_point(direction.normalized() * settings.get("attract_force", 1000), (0, 0))

@@ -51,6 +51,16 @@ def run_game():
             elif event.type == pygame.MOUSEBUTTONUP:
                 attraction_force = 0
 
+        # Новый код для применения силы притяжения
+        if attraction_force > 0:
+            cursor_pos = pygame.mouse.get_pos()
+            for pixel in pixels:
+                direction_vector = pymunk.Vec2d(
+                    cursor_pos[0] - pixel.body.position.x,
+                    cursor_pos[1] - pixel.body.position.y)
+                direction_vector = direction_vector.normalized() * attraction_force
+                pixel.body.apply_force_at_local_point(direction_vector)
+
         screen.fill((0, 0, 0))
         space.step(1 / 120.0)  # Step the simulation forward
 
