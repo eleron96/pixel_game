@@ -1,6 +1,6 @@
 {
     "initial_pixel_size": 20,
-    "pixel_split_parts": 3,
+    "pixel_split_parts": 20,
     "wall_thickness": 5,
     "elasticity": 1.0,
     "friction": 0.5,
