@@ -60,10 +60,10 @@ def settings_menu():
 
     screen_width, screen_height = 320, 240
     screen = pygame.display.set_mode((screen_width, screen_height))
-    pygame.display.set_caption("Настройки")
+    pygame.display.set_caption("Settings")
 
     settings = get_settings()
-    menu_items = ["Размер пикселя", "Количество частей", "Размер шрифта", "Сохранить", "Назад"]  # Добавлен новый пункт "Размер шрифта"
+    menu_items = ["Pixel Size", "Number of Parts", "Font Size", "Save", "Back"]  # Added new item "Font Size"
     menu = Menu(screen, menu_items, screen_width, screen_height)
 
     selected_option = None
@@ -73,19 +73,19 @@ def settings_menu():
         if selected_option == 0:
             # Изменение размера пикселя
             settings['initial_pixel_size'] = edit_setting(screen,
-                                                          "Размер пикселя",
+                                                          "Pixel Size",
                                                           settings[
                                                               'initial_pixel_size'])
         elif selected_option == 1:
             # Изменение количества частей при разделении пикселя
             settings['pixel_split_parts'] = edit_setting(screen,
-                                                         "Количество частей",
+                                                         "Number of Parts",
                                                          settings[
                                                              'pixel_split_parts'])
         elif selected_option == 2:
             # Изменение размера шрифта
             settings['font_size'] = edit_setting(screen,
-                                                  "Размер шрифта",
+                                                  "Font Size",
                                                   settings[
                                                       'font_size'])
         elif selected_option == len(menu_items) - 2:
