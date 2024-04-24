@@ -3,6 +3,8 @@
 
 **Pixel Game** is a simple, pixel-based interactive game developed using Python and Pygame.
 
+![Pixel_Game](https://i.imgur.com/Y7KrBpz.gif)
+
 ## Features
 
 - **Interactive Gameplay**: Control and interact with pixels on your screen.
@@ -44,6 +46,8 @@ Alternatively, you can run the game directly using Poetry:
 ```bash
 poetry run python main.py
 ```
+
+![Pixel_game_menu](https://i.imgur.com/KJEZ0bI.gif)
 
 ## Configuration
 
