@@ -1,4 +1,4 @@
-```markdown
+
 # Pixel Game 🎮
 
 **Pixel Game** is a simple, pixel-based interactive game developed using Python and Pygame.
